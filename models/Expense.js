@@ -5,6 +5,7 @@ const ExpenseSchema = new mongoose.Schema({
   amount: Number,
   category: String,
   type: { type: String, enum: ['Need', 'Want'] },
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  description: { type: String, default: '' }
 });
 module.exports = mongoose.model('Expense', ExpenseSchema);

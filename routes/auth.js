@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Register
@@ -54,6 +55,33 @@ router.post('/login', async (req, res) => {
         res.json({ token });
       }
     );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Get user profile (protected route)
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Update user budget (protected route)
+router.put('/budget', auth, async (req, res) => {
+  const { monthlyBudget } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { monthlyBudget },
+      { new: true }
+    ).select('-password');
+    res.json(user);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
